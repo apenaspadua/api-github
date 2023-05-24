@@ -5,7 +5,7 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.dark,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   header: {
     marginTop: Platform.OS === 'ios' ? 24 : 65,
