@@ -1,24 +1,19 @@
+import { Feather } from '@expo/vector-icons';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { useRoute } from '@react-navigation/native';
+import { Image, SafeAreaView, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ActivityIndicator, Text } from 'react-native-paper';
+
 import UsersService from '../../../application/services/users';
 import { UserDetailModel } from '../../../domain/models/userDetailModel';
-import { Feather } from '@expo/vector-icons'; 
-import { 
-  Image,
-  SafeAreaView, 
-  View
-} from 'react-native';
-import styles from './styles';
-import { Text, ActivityIndicator } from 'react-native-paper';
 import { theme } from '../../../global/styles/theme';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import {useNavigation} from '@react-navigation/native';
 import { screensProps } from '../../../types/navigationProps';
+import styles from './styles';
 
 interface RouteParams {
   login: string;
 }
-
 const Details: React.FC = () => {
   const route = useRoute();
   const { login } = route.params as RouteParams;

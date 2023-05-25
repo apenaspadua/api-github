@@ -29,9 +29,18 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
+      "oneSignalAppId": "9b0f5fa4-a2d8-475b-8b0d-f209c1bd39f1",
       "eas": {
         "projectId": "5bb89dd6-f216-4371-b6a7-6025c9869986"
       }
-    }
+    },
+    "plugins": [
+      [
+        "onesignal-expo-plugin",
+        {
+          "mode": "development"
+        }
+      ]
+    ]
   }
 }

@@ -1,8 +1,9 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import Home from '../../presentation/screens/Home';
-import Search from '../../presentation/screens/Search';
-import Details from '../../presentation/screens/Details';
-import Sign from '../../presentation/screens/Sign';
+
+import Details from '../presentation/screens/Details';
+import Home from '../presentation/screens/Home';
+import Search from '../presentation/screens/Search';
+import Sign from '../presentation/screens/Sign';
 
 const Stack = createStackNavigator();
 

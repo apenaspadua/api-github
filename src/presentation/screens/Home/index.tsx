@@ -1,20 +1,16 @@
+import { Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { FlatList, Image, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FAB, Text } from 'react-native-paper';
+
 import UsersService from '../../../application/services/users';
-import { screensProps } from '../../../types/navigationProps';
+import { removeToken } from '../../../application/storage/tokenUser';
 import { UserModel } from '../../../domain/models/userModel';
 import Header from '../../../global/components/ Header';
-import {useNavigation} from '@react-navigation/native';
 import { theme } from '../../../global/styles/theme';
-import { Text, FAB, ActivityIndicator } from 'react-native-paper';
-import { Feather } from '@expo/vector-icons'; 
+import { screensProps } from '../../../types/navigationProps';
 import styles from './styles';
-import React from 'react';
-import { 
-  SafeAreaView, 
-  FlatList, 
-  View, 
-  Image,  
-  TouchableOpacity 
-} from 'react-native';
 
 const Home: React.FC = () => {
   const navigation = useNavigation<screensProps>();
@@ -72,7 +68,17 @@ const Home: React.FC = () => {
               />
             </View>    
             <FAB
-              style={styles.fab}
+              style={styles.fabSingup}
+              small
+              icon={'logout'}
+              color={theme.colors.secondary}
+              onPress={() => {
+                removeToken()
+                navigation.navigate('Sign')
+              }}
+            />
+            <FAB
+              style={styles.fabSearch}
               small
               icon={'account-search-outline'}
               color={theme.colors.secondary}

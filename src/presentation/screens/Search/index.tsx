@@ -1,14 +1,13 @@
+import { Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Text, TextInput, Button, Snackbar} from 'react-native-paper';
-import { 
-  SafeAreaView, 
-} from 'react-native';
-import styles from './styles';
-import { theme } from '../../../global/styles/theme';
-import {useNavigation} from '@react-navigation/native';
-import { screensProps } from '../../../types/navigationProps';
+import { SafeAreaView } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Feather } from '@expo/vector-icons'; 
+import { Button, Snackbar, Text, TextInput } from 'react-native-paper';
+
+import { theme } from '../../../global/styles/theme';
+import { screensProps } from '../../../types/navigationProps';
+import styles from './styles';
 
 const Search: React.FC = () => {
   const [login, setLogin] = React.useState("");

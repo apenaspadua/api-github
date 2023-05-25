@@ -1,16 +1,16 @@
-
-import {useNavigation} from '@react-navigation/native';
-import styles from './styles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import * as LocalAuthentication from 'expo-local-authentication';
 import React from 'react';
-import { 
-  SafeAreaView, View, 
-} from 'react-native';
-import { screensProps } from '../../../types/navigationProps';
+import { SafeAreaView, View } from 'react-native';
+import { Button, Snackbar, Switch, Text, TextInput } from 'react-native-paper';
+
+import { loginService } from '../../../application/services/login';
+import { saveToken } from '../../../application/storage/tokenUser';
 import Header from '../../../global/components/ Header';
-import { Button, Text, TextInput, Switch, Snackbar} from 'react-native-paper';
 import { theme, themePaper } from '../../../global/styles/theme';
-import { server } from '../../../mocks/server';
-import axios from 'axios';
+import { screensProps } from '../../../types/navigationProps';
+import styles from './styles';
 
 const Sign: React.FC = () => {
   const navigation = useNavigation<screensProps>();
@@ -18,49 +18,72 @@ const Sign: React.FC = () => {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState(false);
+  const [messageError, setMessageError] = React.useState('');
   const [visible, setVisible] = React.useState(false);
 
   const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
   const onDismissSnackBar = () => setVisible(false);
 
   function validateField(username: string, password: string): boolean {
-    const isValid = !!username.trim() && !!password.trim();  
+    const isValid = !!username.trim() && !!password.trim();
     if (!isValid) {
       setError(true);
+      setMessageError('Please, fill in all fields!')
       setVisible(true);
     }
     return isValid;
   }
 
-  const handleLogin = async () => {
-    server.listen();
-    
+  React.useEffect(() => {
+    checkLoggedIn();
+  }, []);
+
+  async function checkLoggedIn() {
     try {
-      const response = await fetch('/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: 'admin',
-          password: 'password',
-        }),
-      });
-  
-      if (response.ok) {
-        console.log('Login successful');
-      } else {
-        const error = await response.json();
-        console.error('Login failed:', error.errorMessage);
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+       authenticateBiometric()
       }
     } catch (error) {
-      console.error('Network request failed:', error);
+      throw error;
     }
+  }
 
-    server.close();
-  };
+  async function handleLogin() {
+    await loginService(username, password)
+      .then((data) => {
+        console.log('USUARIO LOGADO');
+        saveToken(data.token);
+        navigation.navigate('Home');
+      })
+      .catch(() => {
+        setError(true);
+        setMessageError('Username or password incorrect!')
+        setVisible(true);
+      });
+  }
 
-  return(
+  async function handleLoginDevice() {
+    saveToken('tokenteste');
+    navigation.navigate('Home');
+  }
+
+  async function authenticateBiometric() {
+    const hasBiometricAuth = await LocalAuthentication.hasHardwareAsync();
+
+    if (hasBiometricAuth) {
+      const isBiometricEnrolled = await LocalAuthentication.isEnrolledAsync();
+
+      if (isBiometricEnrolled) {
+        const { success } = await LocalAuthentication.authenticateAsync();
+        if (success) {
+          navigation.navigate('Home');
+        }
+      }
+    }
+  }
+
+  return (
     <SafeAreaView style={styles.container}>
       <Header />
       <View style={styles.content}>
@@ -69,41 +92,37 @@ const Sign: React.FC = () => {
         </View>
         <TextInput
           style={styles.textInputContainer}
-          label='User'
-          autoCapitalize='none'
-          onChangeText={text => setUsername(text)}
+          label="User"
+          autoCapitalize="none"
+          onChangeText={(text) => setUsername(text)}
           textColor={theme.colors.secondary}
           activeUnderlineColor={theme.colors.textInput}
-          contentStyle={{ fontFamily: theme.fonts.text500}}
+          contentStyle={{ fontFamily: theme.fonts.text500 }}
           error={error}
         />
         <TextInput
           style={styles.textInputContainer}
-          label='Password'
-          autoCapitalize='none'
+          label="Password"
+          autoCapitalize="none"
           secureTextEntry={!isSwitchOn}
-          onChangeText={text => setPassword(text)}
+          onChangeText={(text) => setPassword(text)}
           textColor={theme.colors.secondary}
           activeUnderlineColor={theme.colors.textInput}
-          contentStyle={{ fontFamily: theme.fonts.text500}}
+          contentStyle={{ fontFamily: theme.fonts.text500 }}
           error={error}
         />
         <View style={styles.switchContainer}>
-          <Switch 
-            theme={themePaper}
-            value={isSwitchOn} 
-            onValueChange={onToggleSwitch} 
-          />
+          <Switch theme={themePaper} value={isSwitchOn} onValueChange={onToggleSwitch} />
           <Text style={styles.textShowPass}>Show password</Text>
         </View>
-        <Button 
+        <Button
           style={styles.buttonContainer}
-          mode={'contained'} 
+          mode={'contained'}
           labelStyle={{ fontSize: 18 }}
           onPress={() => {
-            if(validateField(username, password))
-            handleLogin()
-          }}>
+            if (validateField(username, password)) handleLogin();
+          }}
+        >
           Sign
         </Button>
       </View>
@@ -113,13 +132,14 @@ const Sign: React.FC = () => {
         action={{
           label: 'Understand',
           onPress: () => {
-            setVisible(false)
+            setVisible(false);
           },
-        }}>
-        Please, fill in all fields!
+        }}
+      >
+        {messageError}
       </Snackbar>
     </SafeAreaView>
   );
-}
+};
 
 export default Sign;

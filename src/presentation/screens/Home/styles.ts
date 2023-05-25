@@ -50,11 +50,18 @@ export default StyleSheet.create({
     color: theme.colors.blue,
     marginLeft: 2
   },
-  fab: {
+  fabSearch: {
     position: 'absolute',
     margin: 16,
     right: 16,
     bottom: 16,
     backgroundColor: theme.colors.purple
+  },
+  fabSingup: {
+    position: 'absolute',
+    margin: 16,
+    right: 16,
+    bottom: '11%',
+    backgroundColor: theme.colors.orange
   },
 });
