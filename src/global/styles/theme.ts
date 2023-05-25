@@ -1,3 +1,15 @@
+import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
+
+export const themePaper = {
+  ...DefaultTheme,
+  roundness: 2,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#7D12FE',
+    accent: 'white',
+  },
+};
+
 export const theme = {
   colors: {
     primary: '#24292f',
@@ -16,5 +28,6 @@ export const theme = {
     title500: 'Rajdhani_500Medium',
     text400: 'Inter_400Regular',
     text500: 'Inter_500Medium',
-  }
+  },
+
 };
