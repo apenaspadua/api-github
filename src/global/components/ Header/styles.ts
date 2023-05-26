@@ -1,5 +1,5 @@
 import { Platform, StyleSheet } from 'react-native';
-import { theme } from '../../../global/styles/theme';
+import { theme } from '../../styles/theme';
  
 export default StyleSheet.create({
   header: {

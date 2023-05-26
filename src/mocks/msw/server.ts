@@ -1,4 +1,6 @@
-import { setupServer } from 'msw/native';
+import { setupWorker } from 'msw';
+
 import { handlers } from './handlers';
 
-export const server = setupServer(...handlers);
+const worker = setupWorker(...handlers);
+worker.start();
