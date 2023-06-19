@@ -3,7 +3,9 @@ import { useNavigation } from '@react-navigation/native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import React from 'react';
 import { SafeAreaView, View } from 'react-native';
+import MaskInput from 'react-native-mask-input';
 import { Button, Snackbar, Switch, Text, TextInput } from 'react-native-paper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { loginService } from '../../../application/services/login';
 import { saveToken } from '../../../application/storage/tokenUser';
@@ -23,6 +25,8 @@ const Sign: React.FC = () => {
 
   const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
   const onDismissSnackBar = () => setVisible(false);
+
+  const cpfMask = [/\d/, /\d/, /\d/, '.' , /\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/,'-', /\d/, /\d/]
 
   function validateField(username: string, password: string): boolean {
     const isValid = !!username.trim() && !!password.trim();
@@ -84,61 +88,69 @@ const Sign: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header />
-      <View style={styles.content}>
-        <View style={styles.contentText}>
-          <Text style={styles.text}>Please, enter with your access.</Text>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <Header />
+        <View style={styles.content}>
+          <View style={styles.contentText}>
+            <Text style={styles.text}>Please, enter with your access.</Text>
+          </View>
+          <TextInput
+            style={styles.textInputContainer}
+            label="CPF"
+            autoCapitalize="none"
+            onChangeText={(text) => setUsername(text)}
+            textColor={theme.colors.secondary}
+            activeUnderlineColor={theme.colors.textInput}
+            contentStyle={{ fontFamily: theme.fonts.text500 }}
+            error={error}
+            render={props =>
+              <MaskInput
+                {...props}
+                mask={cpfMask}
+              />
+            }
+          />
+          <TextInput
+            style={styles.textInputContainer}
+            label="Password"
+            autoCapitalize="none"
+            secureTextEntry={!isSwitchOn}
+            onChangeText={(text) => setPassword(text)}
+            textColor={theme.colors.secondary}
+            activeUnderlineColor={theme.colors.textInput}
+            contentStyle={{ fontFamily: theme.fonts.text500 }}
+            error={error}
+          />
+          <View style={styles.switchContainer}>
+            <Switch theme={themePaper} value={isSwitchOn} onValueChange={onToggleSwitch} />
+            <Text style={styles.textShowPass}>Show password</Text>
+          </View>
+          <Button
+            style={styles.buttonContainer}
+            mode={'contained'}
+            labelStyle={{ fontSize: 18 }}
+            onPress={() => {
+              if (validateField(username, password)) handleLoginDevice();
+            }}
+          >
+            Sign
+          </Button>
         </View>
-        <TextInput
-          style={styles.textInputContainer}
-          label="User"
-          autoCapitalize="none"
-          onChangeText={(text) => setUsername(text)}
-          textColor={theme.colors.secondary}
-          activeUnderlineColor={theme.colors.textInput}
-          contentStyle={{ fontFamily: theme.fonts.text500 }}
-          error={error}
-        />
-        <TextInput
-          style={styles.textInputContainer}
-          label="Password"
-          autoCapitalize="none"
-          secureTextEntry={!isSwitchOn}
-          onChangeText={(text) => setPassword(text)}
-          textColor={theme.colors.secondary}
-          activeUnderlineColor={theme.colors.textInput}
-          contentStyle={{ fontFamily: theme.fonts.text500 }}
-          error={error}
-        />
-        <View style={styles.switchContainer}>
-          <Switch theme={themePaper} value={isSwitchOn} onValueChange={onToggleSwitch} />
-          <Text style={styles.textShowPass}>Show password</Text>
-        </View>
-        <Button
-          style={styles.buttonContainer}
-          mode={'contained'}
-          labelStyle={{ fontSize: 18 }}
-          onPress={() => {
-            if (validateField(username, password)) handleLogin();
+        <Snackbar
+          visible={visible}
+          onDismiss={onDismissSnackBar}
+          action={{
+            label: 'Understand',
+            onPress: () => {
+              setVisible(false);
+            },
           }}
         >
-          Sign
-        </Button>
-      </View>
-      <Snackbar
-        visible={visible}
-        onDismiss={onDismissSnackBar}
-        action={{
-          label: 'Understand',
-          onPress: () => {
-            setVisible(false);
-          },
-        }}
-      >
-        {messageError}
-      </Snackbar>
-    </SafeAreaView>
+          {messageError}
+        </Snackbar>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
